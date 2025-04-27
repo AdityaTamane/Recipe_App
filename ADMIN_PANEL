@@ -1,0 +1,122 @@
+Index.html: 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recipe Admin Panel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Add New Recipe</h1>
+  <form id="recipeForm">
+    <input type="text" id="catogary" placeholder="Recipe catogary" required /><br />
+
+    <input type="text" id="title" placeholder="Recipe Title" required /><br />
+    
+    <textarea id="ingredients" placeholder="Ingredients (one per line)" required></textarea><br />
+    
+    <textarea id="steps" placeholder="Steps (one per line)" required></textarea><br />
+    
+    <input type="text" id="youtube" placeholder="YouTube Video Link" /><br />
+    
+    <input type="text" id="imageUrl" placeholder="Image URL" /><br />
+    
+    <button type="submit">Add Recipe</button>
+  </form>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
+
+
+
+Styles.css :
+
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+  }
+  button {
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+
+Script.js:
+
+// Import Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+// Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyAH4iUedupbK7kIbHOqdjXO2jP4smrpn3c",
+        authDomain: "foodierecipes-38166.firebaseapp.com",
+        projectId: "foodierecipes-38166",
+        storageBucket: "foodierecipes-38166.firebasestorage.app",
+        messagingSenderId: "558303955824",
+        appId: "1:558303955824:web:125f322ed06e9096575db5",
+        measurementId: "G-T9ZYE8Q6TK"
+      };
+
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Form submission
+const form = document.getElementById("recipeForm");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+  
+    const catogary = document.getElementById("catogary").value.trim();
+    const title = document.getElementById("title").value.trim();
+    const ingredients = document.getElementById("ingredients").value.trim().split(",");
+    const steps = document.getElementById("steps").value.trim().split(",");
+    const youtubeLink = document.getElementById("youtube").value.trim();
+    const imageUrl = document.getElementById("imageUrl").value.trim();
+  
+    try {
+      await addDoc(collection(db, "recipes"), {
+        catogary,
+        title,
+        ingredients,
+        steps,
+        youtubeLink,
+        imageUrl,
+        createdAt: new Date()
+      });
+  
+      alert("✅ Recipe added successfully!");
+      form.reset(); // clears all fields
+  
+    } catch (error) {
+      console.error("❌ Error adding recipe:", error);
+      alert("⚠️ Failed to add recipe. Check console for details.");
+    }
+  });
+  
+  const submitBtn = form.querySelector("button");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Saving...";
+  
+    // ... your logic
+  
+    alert("Recipe added successfully!");
+    form.reset();
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Add Recipe";
+  });
+  
